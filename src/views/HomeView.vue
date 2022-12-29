@@ -16,6 +16,14 @@ export default defineComponent({
   <NavBar />
   <SideBar />
   <v-main>
-    <v-card height="200px"></v-card>
+    <v-container fluid>
+      <v-row align="center" align-content="center" justify="center">
+        <v-col align-self="center" cols="12" sm="4">
+          <v-card height="200px" class="text-center">
+            <v-span class="text-center text-h3">Wellcome!</v-span>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-main>
 </template>

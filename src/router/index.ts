@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useUserStore } from "@/stores";
 
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
@@ -23,6 +24,14 @@ const router = createRouter({
       component: NotFoundView,
     },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== "login" && !useUserStore().user) next({ name: "login" });
+
+  if (to.name === "login" && useUserStore().user) next({ name: "home" });
+
+  next();
 });
 
 export default router;

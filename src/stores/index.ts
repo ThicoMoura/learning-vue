@@ -1,3 +1,4 @@
 import { useThemeStore, useSideBarStore } from "./config";
+import { useUserStore } from "./user";
 
-export { useThemeStore, useSideBarStore };
+export { useThemeStore, useSideBarStore, useUserStore };
