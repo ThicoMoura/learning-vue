@@ -1,18 +1,6 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-
-interface Permission {
-  Name: string;
-  Type: Array<string>;
-}
-
-interface User {
-  Token: string;
-  Name: string;
-  Cpf: string;
-  Permission: Array<Permission>;
-  Image?: string;
-}
+import type { User } from "@/types";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<User | null>(null);

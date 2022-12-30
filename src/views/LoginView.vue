@@ -1,24 +1,44 @@
 <script lang="ts">
-import { defineComponent } from "vue";
 import { axios } from "@/plugins";
+import { defineComponent, ref } from "vue";
+import AlertComponent from "@/components/alert/AlertComponent.vue";
 
 export default defineComponent({
   data() {
     return {
-      cpf: "062.164.921-01",
-      pass: "123456",
-      load: false,
+      cpf: ref(""),
+      pass: ref(""),
+      load: ref(false),
+      onAlert: ref(false),
     };
   },
-  mounted() {
-    axios.get("/").catch((err) => console.log(err));
-    console.log();
+  methods: {
+    async login() {
+      try {
+        this.load = true;
+        if (this.cpf === "") {
+          this.onAlert = true;
+        }
+        const response = await axios.post("/login", {
+          CPF: this.cpf,
+          Pass: this.pass,
+        });
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.load = false;
+      }
+    },
+  },
+  components: {
+    Alert: AlertComponent,
   },
 });
 </script>
 
 <template>
-  <v-container fluid>
+  <v-container justify="center" fluid>
     <v-row
       align="center"
       class="h-screen"
@@ -26,7 +46,12 @@ export default defineComponent({
       justify="center"
     >
       <v-col align-self="center" class="align-center" cols="12" sm="4">
-        <v-card height="300px" title="Login" :loading="load">
+        <v-card
+          class="text-center"
+          height="300px"
+          title="Login"
+          :loading="load"
+        >
           <v-card-text>
             <v-text-field
               clearable
@@ -43,11 +68,17 @@ export default defineComponent({
               v-model="pass"
             ></v-text-field>
           </v-card-text>
-          <v-card-actions>
-            <v-btn @click="load = !load">Click me</v-btn>
+          <v-card-actions class="justify-center">
+            <v-btn @click="login">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
+      <Alert
+        v-model="onAlert"
+        color="red"
+        message="teste"
+        icon="mdi-close-octagon"
+      />
     </v-row>
   </v-container>
 </template>
