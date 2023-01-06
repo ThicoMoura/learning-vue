@@ -1,16 +1,16 @@
 <script lang="ts">
-import { axios } from "@/plugins";
 import { defineComponent, ref } from "vue";
 import AlertComponent from "@/components/alert/AlertComponent.vue";
 import { AxiosError } from "axios";
 import { _Error } from "@/types";
 import type { Alert } from "@/types";
-import { useUserStore } from "@/stores";
+import { useAuthStore } from "@/stores";
+import router from "@/router";
 
 export default defineComponent({
   data() {
     return {
-      cpf: ref(""),
+      email: ref(""),
       pass: ref(""),
       load: ref(false),
       onAlert: ref(false),
@@ -24,13 +24,11 @@ export default defineComponent({
   methods: {
     async login() {
       try {
+        this.onAlert = false;
         this.load = true;
-        if (!this.cpf) {
-          throw new _Error("Cpf can't be empty", "yellow", "mdi-alert-octagon");
-        }
-        if (this.cpf.length < 11) {
+        if (!this.email) {
           throw new _Error(
-            "Cpf must be least at 11 characters",
+            "email can't be empty",
             "yellow",
             "mdi-alert-octagon"
           );
@@ -42,15 +40,11 @@ export default defineComponent({
             "mdi-alert-octagon"
           );
         }
-        const response = await axios.post("/login", {
-          CPF: this.cpf,
-          Pass: this.pass,
-        });
 
-        useUserStore().SetUser(response.data.Message.Token, response.data.Message.Name, response.data.Message.CPF, [], null);
-        console.log(useUserStore().user);
+        await useAuthStore().login(this.email, this.pass);
+
+        router.push({ name: "Home" });
       } catch (err) {
-        this.onAlert = false;
         if (err instanceof _Error) {
           this.alert.Color = err.color;
           this.alert.Icon = err.icon;
@@ -68,7 +62,7 @@ export default defineComponent({
                   this.alert.Color = "red";
                   this.alert.Icon = "mdi-close-octagon";
                   if (err.response?.data.Message == "no rows in result set") {
-                    this.alert.Message = "This CPF incorret!";
+                    this.alert.Message = "This email incorret!";
                   } else {
                     this.alert.Message = "This pass incorret!";
                   }
@@ -77,9 +71,10 @@ export default defineComponent({
             }
           }
         } else {
-          this.alert.Color = "";
-          this.alert.Icon = "";
-          this.alert.Message = "";
+          console.log(err);
+          this.alert.Color = "Red";
+          this.alert.Icon = "mdi-close-octagon";
+          this.alert.Message = "Server Error!";
         }
         this.onAlert = true;
       } finally {
@@ -112,9 +107,9 @@ export default defineComponent({
           <v-card-text>
             <v-text-field
               clearable
-              label="Cpf"
+              label="email"
               prepend-icon="mdi-account-tie"
-              v-model="cpf"
+              v-model="email"
             ></v-text-field>
             <v-text-field
               clearable

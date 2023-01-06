@@ -1,18 +1,22 @@
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import { useThemeStore, useSideBarStore, useUserStore } from "@/stores";
+import type { User } from "@/types";
 
-export default defineComponent({
-  data() {
-    const { user, Initials } = useUserStore();
-    return {
-      theme: useThemeStore(),
-      drawer: useSideBarStore(),
-      ring: ref(false),
-      user,
-      Initials,
-    };
-  },
+const theme = useThemeStore();
+const drawer = useSideBarStore();
+const ring = ref(false);
+
+const { user, Initials } = useUserStore();
+
+const u = ref<User>({
+  Email: "",
+  Name: "",
+  Image: undefined,
+});
+
+user().then((res) => {
+  u.value = res;
 });
 </script>
 
@@ -47,17 +51,17 @@ export default defineComponent({
           class="d-flex align-center justify-space-around"
           v-bind="props"
         >
-          <v-avatar color="brown" :image="user.Image">
-            <span class="text-h6">{{ user.Image ? "" : Initials }}</span>
+          <v-avatar color="brown" :image="u.Image">
+            <span class="text-h6">{{ u.Image ? "" : Initials(u.Name) }}</span>
           </v-avatar>
         </v-btn>
       </template>
       <v-card>
         <v-card-text>
           <div class="mx-auto text-center">
-            <h3>{{ user.Name }}</h3>
+            <h3>{{ u.Name }}</h3>
             <p class="text-caption mt-1">
-              {{ user.Cpf }}
+              {{ u.Email }}
             </p>
             <v-divider class="my-3"></v-divider>
             <v-btn rounded variant="text">Edit Account</v-btn>

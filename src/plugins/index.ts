@@ -1,4 +1,4 @@
 import vuetify from "./vuetify";
-import axios from "./axios";
+import { base, auth } from "./axios";
 
-export { vuetify, axios };
+export { vuetify, base, auth };

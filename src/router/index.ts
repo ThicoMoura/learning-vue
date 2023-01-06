@@ -1,22 +1,24 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useUserStore } from "@/stores";
 
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
+import { useAuthStore } from "@/stores";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "home",
+      name: "Home",
       component: HomeView,
+      beforeEnter: [],
     },
     {
       path: "/login",
-      name: "login",
+      name: "Login",
       component: LoginView,
+      beforeEnter: [],
     },
     {
       path: "/:pathMatch(.*)*",
@@ -26,12 +28,13 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.name !== "login" && !useUserStore().user) next({ name: "login" });
+router.beforeEach(async (to) => {
+  const token = useAuthStore().token;
 
-  if (to.name === "login" && useUserStore().user) next({ name: "home" });
-
-  next();
+  if (to.name !== "Login" && (!token || token === "undefined"))
+    return { name: "Login" };
+  if (to.name === "Login" && token && token !== "undefined")
+    return { name: "Home" };
 });
 
 export default router;
