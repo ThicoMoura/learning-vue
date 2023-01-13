@@ -1,5 +1,8 @@
 export default interface User {
-  Name: string;
+  ID: string;
+  GroupID: string;
   Email: string;
+  Name: string;
   Image?: string;
+  Active: bool;
 }

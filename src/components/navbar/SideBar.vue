@@ -15,9 +15,10 @@ export default defineComponent({
   <v-navigation-drawer :rail="drawer.drawer" permanent>
     <v-list density="compact" nav>
       <v-list-item
-        prepend-icon="mdi-home"
-        title="Home"
-        value="home"
+        prepend-icon="mdi-account"
+        title="Users"
+        value="users"
+        active
       ></v-list-item>
     </v-list>
   </v-navigation-drawer>

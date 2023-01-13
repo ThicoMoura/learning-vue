@@ -10,6 +10,8 @@ import router from "@/router";
 export default defineComponent({
   data() {
     return {
+      form: ref(false),
+      show: ref(false),
       email: ref(""),
       pass: ref(""),
       load: ref(false),
@@ -19,12 +21,28 @@ export default defineComponent({
         Icon: "",
         Message: "",
       }),
+      rules: {
+        Email: [
+          (v: string) => !!v || "E-mail is required",
+          (v: string) => /.+@.+\./.test(v) || "E-mail must be valid",
+        ],
+        Pass: [
+          (v: string) => !!v || "Pass is required",
+          (v: string) =>
+            v.length >= 6 ||
+            "Pass must be greater than or equal to 6 characters",
+        ],
+      },
     };
   },
   methods: {
     async login() {
       try {
+        if (!this.form) return;
         this.onAlert = false;
+        this.alert.Color = "";
+        this.alert.Icon = "";
+        this.alert.Message = "";
         this.load = true;
         if (!this.email) {
           throw new _Error(
@@ -50,28 +68,34 @@ export default defineComponent({
           this.alert.Icon = err.icon;
           this.alert.Message = err.message;
         } else if (err instanceof AxiosError) {
+          console.log("axios");
           if (AxiosError.ERR_BAD_REQUEST == err.code) {
+            console.log("bad request");
             if (err.response) {
-              switch (err.response?.data.Code) {
+              console.log("response");
+              switch (err.response?.status) {
                 case 400:
                   this.alert.Color = "yellow";
                   this.alert.Icon = "mdi-alert-octagon";
-                  this.alert.Message = err.response?.data.Message;
+                  this.alert.Message = err.response?.data;
+                  console.log(this.alert);
                   break;
                 case 401:
                   this.alert.Color = "red";
                   this.alert.Icon = "mdi-close-octagon";
-                  if (err.response?.data.Message == "no rows in result set") {
+                  if (err.response?.data == "no rows in result set") {
                     this.alert.Message = "This email incorret!";
                   } else {
                     this.alert.Message = "This pass incorret!";
                   }
                   break;
+                default:
+                  console.log("default");
+                  break;
               }
             }
           }
         } else {
-          console.log(err);
           this.alert.Color = "Red";
           this.alert.Icon = "mdi-close-octagon";
           this.alert.Message = "Server Error!";
@@ -96,33 +120,46 @@ export default defineComponent({
       align-content="center"
       justify="center"
     >
-      <v-col align-self="center" class="align-center" cols="12" sm="4">
-        <v-card
-          class="text-center"
-          height="300px"
-          title="Login"
-          :loading="load"
-          elevation="5"
-        >
+      <v-col align-self="center" class="align-center" cols="8" sm="6" md="4">
+        <v-card class="text-center" height="300px" title="Login" elevation="5">
           <v-card-text>
-            <v-text-field
-              clearable
-              label="email"
-              prepend-icon="mdi-account-tie"
-              v-model="email"
-            ></v-text-field>
-            <v-text-field
-              clearable
-              label="Pass"
-              type="password"
-              prepend-icon="mdi-lock"
-              hint="Enter your password to access this website"
-              v-model="pass"
-            ></v-text-field>
+            <v-form v-model="form" @submit.prevent="login">
+              <v-text-field
+                v-model="email"
+                :rules="rules.Email"
+                :readonly="load"
+                clearable
+                required
+                label="Email"
+                autocomplete="email"
+                prepend-icon="mdi-account-tie"
+              ></v-text-field>
+              <v-text-field
+                v-model="pass"
+                :rules="rules.Pass"
+                :readonly="load"
+                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="show ? 'text' : 'password'"
+                @click:append="show = !show"
+                clearable
+                required
+                label="Pass"
+                prepend-icon="mdi-lock"
+                autocomplete="current-password"
+              ></v-text-field>
+              <br />
+              <v-btn
+                :disabled="!form"
+                :loading="load"
+                block
+                :color="form ? 'success' : ''"
+                type="submit"
+                variant="elevated"
+              >
+                Login
+              </v-btn>
+            </v-form>
           </v-card-text>
-          <v-card-actions class="justify-center">
-            <v-btn @click="login">Login</v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
       <Alert
