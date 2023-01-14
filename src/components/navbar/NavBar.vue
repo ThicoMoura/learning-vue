@@ -25,13 +25,7 @@ const logout = async () => {
     .then((res) => {
       if (res.status === 200) {
         sessionStorage.removeItem("tk");
-        push({ name: "Login" })
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        push({ name: "Login" });
       }
     });
 };
@@ -54,17 +48,25 @@ const logout = async () => {
       <v-card>
         <v-card-text>
           <v-row>
-            <v-col col="1" sm="1"><v-icon icon="mdi-email"></v-icon></v-col>
-            <v-col col="10" sm="10"><p>Example alert notification</p></v-col>
-            <v-col col="1" sm="1">
+            <v-col sm="2">
+              <v-btn variant="text" icon="mdi-email"></v-btn>
+            </v-col>
+            <v-col sm="8">
+              <v-btn variant="text">Example alert notification</v-btn>
+            </v-col>
+            <v-col sm="2">
               <v-btn icon="mdi-close" variant="text"></v-btn>
             </v-col>
           </v-row>
           <v-divider class="my-3"></v-divider>
           <v-row>
-            <v-col col="1"><v-icon icon="mdi-email-open"></v-icon></v-col>
-            <v-col col="10"><p>Example opened notification</p></v-col>
-            <v-col col="1">
+            <v-col sm="2">
+              <v-btn variant="text" icon="mdi-email-open"></v-btn>
+            </v-col>
+            <v-col sm="8">
+              <v-btn variant="text">Example opened notification</v-btn>
+            </v-col>
+            <v-col sm="2">
               <v-btn icon="mdi-close" variant="text"></v-btn>
             </v-col>
           </v-row>

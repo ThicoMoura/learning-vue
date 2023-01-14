@@ -5,7 +5,7 @@ import type { User } from "@/types";
 
 export const useUserStore = defineStore("user", () => {
   const user = async () => {
-    const res = await auth(useAuthStore().token).get("user/profile/");
+    const res = await auth(useAuthStore().token()).get("user/profile/");
 
     return <User>{
       ID: res.data.ID,

@@ -2,6 +2,10 @@ import { defineStore } from "pinia";
 import { base } from "@/plugins";
 
 export const useAuthStore = defineStore("auth", () => {
+  const token = () => {
+    return sessionStorage.getItem("tk");
+  };
+
   const login = async (email: string, pass: string) => {
     const res = await base.post("login/", {
       email: email,
@@ -11,5 +15,5 @@ export const useAuthStore = defineStore("auth", () => {
     sessionStorage.setItem("tk", res.data.Message);
   };
 
-  return { login };
+  return { login, token };
 });

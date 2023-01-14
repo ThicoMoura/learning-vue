@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
+import { useAuthStore } from "@/stores";
 import { auth } from "@/plugins";
 
 const router = createRouter({
@@ -29,27 +30,25 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  const token = sessionStorage.getItem("tk");
+  const { token } = useAuthStore();
+  const tk = token();
   let status;
 
-  if (token) {
-    status = await auth(token)
+  if (tk) {
+    status = await auth(tk)
       .get("/auth")
       .catch((err) => {
         return err.response.status;
       });
   }
 
-  if (
-    to.name !== "Login" &&
-    (!token || token === "undefined" || status == 401)
-  ) {
-    if (token) {
+  if (to.name !== "Login" && (!tk || tk === "undefined" || status == 401)) {
+    if (tk) {
       sessionStorage.removeItem("tk");
     }
     return { name: "Login" };
   }
-  if (to.name === "Login" && token && token !== "undefined" && status != 401)
+  if (to.name === "Login" && tk && tk !== "undefined" && status != 401)
     return { name: "Home" };
 });
 
